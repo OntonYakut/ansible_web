@@ -1,5 +1,5 @@
 ---
-  virtualenv_dir: "/home/onton/app_venv"
-  app_dir: "/home/onton/web_app"
-  git_repo: "https://github.com/onton/onton_web.git"
+  virtualenv_dir: "/home/{{user}}/app_venv"
+  app_dir: "/home/{{user}}/web_app"
+  git_repo: "https://github.com/OntonYakut/new_web"
   app_port: "8081"
