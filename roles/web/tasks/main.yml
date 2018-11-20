@@ -1,0 +1,56 @@
+---
+- name: test
+  raw: uname -a
+  register: OS_type
+
+- name: Install virtualenv via pip
+  pip:
+    name: virtualenv
+    executable: pip3
+  become: yes
+  become_user: root
+
+- debug:
+    msg: "{{ OS_type.stdout }}"
+
+- name: test directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+
+- name: check requirements
+  copy:
+    src: requirements.txt
+    dest: /tmp
+    mode: 0644
+
+- name: Initiate virtualenv
+  command: virtualenv "{{ virtualenv_dir }}" -p python3 creates=\""{{ virtualenv_dir }}"\"
+
+- name: install flask virtualenv
+  pip:
+    executable: pip3
+    requirements: /tmp/requirements.txt
+    virtualenv: "{{ virtualenv_dir }}"
+    virtualenv_python: python3
+
+- git:
+    repo: "{{ git_repo }}"
+    dest: "{{ app_dir }}"
+    clone: yes
+
+- name: copy config
+  copy:
+    src: config.j2
+    dest: "{{ app_dir }}/config.py"
+    mode: 0644
+
+- name: copy startservice
+  copy:
+    src: startservice.j2
+    dest: "{{ app_dir }}/startservice.sh"
+    mode: 0755
+
+
+- name: start app
+  command: "{{ app_dir }}/startservice.sh"
